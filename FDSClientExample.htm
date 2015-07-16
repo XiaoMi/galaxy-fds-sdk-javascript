@@ -1,0 +1,316 @@
+<html>
+  <head>
+    <title>FDS Javascript demo</title>
+    <script type="text/javascript" src="jquery-1.11.2.js"></script>
+    <script type="text/javascript" src="jQuery.md5.js"></script>
+    <script type="text/javascript" src="jquery.fileDownload-1.4.3.js"></script>
+    <script type="text/javascript" src="fds/ClientConfiguration.js"></script>
+    <script type="text/javascript" src="fds/GalaxyFDSClient.js"></script>
+    <script type="text/javascript" src="fds/auth/Common.js"></script>
+    <script type="text/javascript" src="fds/auth/SSOCredential.js"></script>
+    <script type="text/javascript" src="fds/model/FDSObjectMetadata.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      var appId = "{app_id}";
+      var serviceToken = "{service_token}";
+      var sid = "developer";
+      var credential = new SSOCredential(appId, serviceToken, sid);
+      var config = new ClientConfiguration();
+      config.enableHttps = false;
+      config.enableCdnForDownload = false;
+      var fdsClient = new GalaxyFDSClient(credential, config);
+      var bucketName = "test-javascript-bucket";
+      var objectName = "text1.txt";
+      var uploadedFile;
+
+      function listAllBuckets() {
+        // List buckets
+        fdsClient.listBuckets(function (result, xhr) {
+          $("#myObjects").html(JSON.stringify(result));
+        });
+      }
+
+      function doesBucketExist() {
+        fdsClient.doesBucketExist(bucketName, function(result) {
+          if (result) {
+            $("#bucketExists").html("Bucket exists");
+          } else {
+            $("#bucketExists").html("Bucket doesn't exist");
+          }
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function createBucket() {
+        fdsClient.createBucket(bucketName, function () {
+          $("#createBucket").html("Create bucket successfully");
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function deleteBucket() {
+        fdsClient.deleteBucket(bucketName, function () {
+          $("#deleteBucket").html("Delete bucket successfully");
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function getBucketAcl() {
+        fdsClient.getBucketAcl(bucketName, function(result) {
+          $("#getBucketAcl").html(JSON.stringify(result));
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function setBucketAcl() {
+        var bucketAcl = {
+          "accessControlList": [{
+            "grantee": {"id": "38199"},
+            "permission": "READ",
+            "type": "USER"}],
+          "owner": {
+            "id": "38099"
+          }};
+        fdsClient.setBucketAcl(bucketName, bucketAcl, function() {
+          $("setBucketAcl").html("Set bucket acl successfully");
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function deleteBucketAcl() {
+        var bucketAcl = {
+          "accessControlList" : [{
+            "grantee": {"id": "38199"},
+            "permission": "READ",
+            "type": "USER"}],
+          "owner": {
+            "id": "38099"
+          }};
+        fdsClient.deleteBucketAcl(bucketName, bucketAcl, function() {
+          $("#deleteBucketAcl").html("Delete bucket acl successfully");
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function putObject() {
+        var metadata = new FDSObjectMetadata();
+        metadata.addUserMetadata("x-xiaomi-meta-test", "value");
+        fdsClient.putObject(bucketName, objectName, "Hello world!", metadata,
+            null, function(result) {
+              $("#putObject").html(JSON.stringify(result));
+            }, function(errorMsg) {
+              alert(errorMsg);
+            });
+      }
+
+      /*
+      function getObject() {
+        fdsClient.getObject(bucketName, objectName, function(result) {
+          $("#getObject").html("Object Content:" + result);
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+      */
+
+      function deleteObject() {
+        fdsClient.deleteObject(bucketName, objectName, function(){
+          $("#deleteObject").html("Delete object successfully");
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function doesObjectExist() {
+        fdsClient.doesObjectExist(bucketName, objectName, function(result) {
+          if (result) {
+            $("#doesObjectExist").html("Object exists");
+          } else {
+            $("#doesObjectExist").html("Object doesn't exist");
+          }
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function getObjectMetadata() {
+        fdsClient.getObjectMetadata(bucketName, objectName, function(result) {
+          $("#getObjectMetadata").html(JSON.stringify(result));
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function getObjectAcl() {
+        fdsClient.getObjectAcl(bucketName, objectName, function(result) {
+          $("#getObjectAcl").html(JSON.stringify(result));
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function setObjectAcl() {
+        var bucketAcl = {
+          "accessControlList": [{
+            "grantee": {"id": "38199"},
+            "permission": "READ",
+            "type": "USER"}],
+          "owner": {
+            "id": "38099"
+          }};
+        fdsClient.setObjectAcl(bucketName, objectName, bucketAcl, function() {
+          $("setObjectAcl").html("Set object acl successfully");
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function deleteObjectAcl() {
+        var bucketAcl = {
+          "accessControlList": [{
+            "grantee": {"id": "38199"},
+            "permission": "READ",
+            "type": "USER"}],
+          "owner": {
+            "id": "38099"
+          }};
+        fdsClient.deleteObjectAcl(bucketName, objectName, bucketAcl, function() {
+          $("#deleteObjectAcl").html("Delete object acl successfully");
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function downloadFile() {
+        if (uploadedFile !== undefined) {
+          fdsClient.getObject(bucketName, uploadedFile, function() {
+          }, function(errorMsg) {
+            alert(errorMsg);
+          });
+        }
+      }
+
+      function listObjects() {
+        fdsClient.listObjects(bucketName, "", function(result) {
+          var html = JSON.stringify(result);
+          // Note: In order to list all the pages, users should
+          if (result["truncated"]) {
+            fdsClient.listNextBatchOfObjects(result, function(nextResult) {
+              html += "<br/>";
+              html += JSON.stringify(nextResult);
+              $("#listObjects").html(html);
+            }, function(errorMsg) {
+              alert(errorMsg);
+            });
+          }
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      $(document).ready(function() {
+        $("#submitForm").click(function() {
+          var file = $("input[type=file]")[0].files[0];
+          var formData = new FormData();
+          formData.append("file", file);
+          uploadedFile = file.name;
+          fdsClient.putObject(bucketName, file.name, formData, null,
+              function(progress) {
+                console.log(progress);
+                if (progress === 100) {
+                  alert("Upload completed");
+                }
+              }, function(result) {
+                $("#fileUploadResult").html(JSON.stringify(result));
+              },
+              function(errorMsg) {
+                alert(errorMsg);
+              }
+          );
+        });
+      });
+    </script>
+    <input type="button" value="List My objects" onclick="listAllBuckets()" />
+    <div id="myObjects"></div>
+    <br/>
+
+    <input type="button" value="Does bucket exist" onclick="doesBucketExist()" />
+    <div id="bucketExists"></div>
+    <br/>
+
+    <input type="button" value="Create bucket" onclick="createBucket()" />
+    <div id="createBucket"></div>
+    <br/>
+
+    <input type="button" value="Delete bucket" onclick="deleteBucket()" />
+    <div id="deleteBucket"></div>
+    <br/>
+
+    <input type="button" value="Get bucket acl" onclick="getBucketAcl()" />
+    <div id="getBucketAcl"></div>
+    <br/>
+
+    <input type="button" value="Add bucket acl" onclick="setBucketAcl()" />
+    <div id="setBucketAcl"></div>
+    <br/>
+
+    <input type="button" value="Delete bucket acl" onclick="deleteBucketAcl()" />
+    <div id="deleteBucketAcl"></div>
+    <br/>
+
+    <input type="button" value="Put object" onclick="putObject()" />
+    <div id="putObject"></div>
+    <br/>
+
+    <!--
+    <input type="button" value="Get Object" onclick="getObject()" />
+    <div id="getObject"></div>
+    <br/>
+    -->
+
+    <input type="button" value="Delete object" onclick="deleteObject()" />
+    <div id="deleteObject"></div>
+    <br/>
+
+    <input type="button" value="Does object exist" onclick="doesObjectExist()" />
+    <div id="doesObjectExist"></div>
+    <br/>
+
+    <input type="button" value="Get object metadata" onclick="getObjectMetadata()" />
+    <div id="getObjectMetadata"></div>
+    <br/>
+
+    <input type="button" value="Get object acl" onclick="getObjectAcl()" />
+    <div id="getObjectAcl"></div>
+    <br/>
+
+    <input type="button" value="Set object acl" onclick="setObjectAcl()" />
+    <div id="setObjectAcl"></div>
+    <br/>
+
+    <input type="button" value="Delete object acl" onclick="deleteObjectAcl()" />
+    <div id="deleteObjectAcl"></div>
+    <br/>
+
+    <form action="">
+      <input id="uploadFile" type="file" value="file"/>
+      <input id="submitForm" type="button" value="Submit"/>
+    </form>
+    <div id="fileUploadResult"></div>
+
+    <input type="button" value="Download the file" onclick="downloadFile()" />
+    <div id="downloadFile"></div>
+    <br/>
+
+    <input type="button" value="List all the objects" onclick="listObjects()" />
+    <div id="listObjects"></div>
+    <br/>
+  </body>
+</html>
