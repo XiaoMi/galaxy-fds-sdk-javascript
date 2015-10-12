@@ -1,4 +1,4 @@
-GalaxyFDSClient = function(credential, config) {
+GalaxyFDSClient = function (credential, config) {
   this.credential = credential;
   this.config = config;
 };
@@ -13,162 +13,162 @@ GalaxyFDSClient.prototype = {
 
   maxKeys: 15,
 
-  listBuckets: function(success, fail) {
+  listBuckets: function (success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, "");
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "GET",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
       dataType: "json",
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success(xhr.responseJSON);
         } else {
           fail("List buckets failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  createBucket: function(bucketName, success, fail) {
+  createBucket: function (bucketName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName);
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "PUT",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
         } else {
           fail("Create bucket failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  deleteBucket: function(bucketName, success, fail) {
+  deleteBucket: function (bucketName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName);
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "DELETE",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200 || xhr.status === 404) {
           success();
         } else {
           fail("Delete bucket failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  doesBucketExist: function(bucketName, success, fail) {
+  doesBucketExist: function (bucketName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName);
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "HEAD",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 404) {
           success(false);
         } else if (xhr.status === 403 || xhr.status === 200) {
           success(true);
         } else {
           fail("Check bucket existence failed, status:" + xhr.status
-            + ", error:" + xhr.responseText);
+          + ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  getBucketAcl: function(bucketName, success, fail) {
+  getBucketAcl: function (bucketName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName, "acl");
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "GET",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
       dataType: "json",
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success(xhr.responseJSON);
         } else {
           fail("Get bucket acl failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  setBucketAcl: function(bucketName, acl, success, fail) {
+  setBucketAcl: function (bucketName, acl, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName, "acl");
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "PUT",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
       data: JSON.stringify(acl),
       contentType: "application/json",
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
         } else {
           fail("Set bucket acl failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  deleteBucketAcl: function(bucketName, acl, success, fail) {
+  deleteBucketAcl: function (bucketName, acl, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName, "acl", "action=delete");
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "PUT",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
       data: JSON.stringify(acl),
       contentType: "application/json",
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
         } else {
           fail("Delete bucket acl failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     })
   },
 
-  listObjects: function(bucketName, prefix, success, fail) {
+  listObjects: function (bucketName, prefix, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName, "prefix=" + prefix,
         "delimiter=" + this.delimiter, "maxKeys=" + this.maxKeys);
@@ -176,45 +176,11 @@ GalaxyFDSClient.prototype = {
     return this.jquery.ajax({
       url: uri,
       type: "GET",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
       dataType: "json",
-      complete: function(xhr, status) {
-        if (xhr.status === 200) {
-          success(xhr.responseJSON);
-        } else {
-          fail("List objects failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
-        }
-      }
-    });
-  },
-
-  listNextBatchOfObjects: function(previousObjectListing, success, fail) {
-    if (!previousObjectListing["truncated"]) {
-      fail("The previous listObjects() response is complete, call" +
-        " of listNextBatchOfObjects() will be ignored.");
-      return;
-    }
-
-    var bucketName = previousObjectListing["name"];
-    var prefix = previousObjectListing["prefix"];
-    var marker = previousObjectListing["nextMarker"];
-
-    var baseUri = this.config.getBaseUri();
-    var uri = this.formatUri(baseUri, bucketName, "prefix=" + prefix,
-      "delimiter=" + this.delimiter, "maxKeys=" + this.maxKeys,
-      "marker=" + marker);
-    var self = this;
-    return this.jquery.ajax({
-      url: uri,
-      type: "GET",
-      beforeSend: function(xhr) {
-        self.prepareRequestHeader(xhr);
-      },
-      dataType: "json",
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success(xhr.responseJSON);
         } else {
@@ -225,8 +191,46 @@ GalaxyFDSClient.prototype = {
     });
   },
 
-  putObject: function(bucketName, objectName, content, metadata,
-    progressListener, success, fail) {
+  listTrashObjects: function (prefix, success, fail) {
+    return this.listObjects("trash", prefix, success, fail);
+  },
+
+  listNextBatchOfObjects: function (previousObjectListing, success, fail) {
+    if (!previousObjectListing["truncated"]) {
+      fail("The previous listObjects() response is complete, call" +
+      " of listNextBatchOfObjects() will be ignored.");
+      return;
+    }
+
+    var bucketName = previousObjectListing["name"];
+    var prefix = previousObjectListing["prefix"];
+    var marker = previousObjectListing["nextMarker"];
+
+    var baseUri = this.config.getBaseUri();
+    var uri = this.formatUri(baseUri, bucketName, "prefix=" + prefix,
+        "delimiter=" + this.delimiter, "maxKeys=" + this.maxKeys,
+        "marker=" + marker);
+    var self = this;
+    return this.jquery.ajax({
+      url: uri,
+      type: "GET",
+      beforeSend: function (xhr) {
+        self.prepareRequestHeader(xhr);
+      },
+      dataType: "json",
+      complete: function (xhr, status) {
+        if (xhr.status === 200) {
+          success(xhr.responseJSON);
+        } else {
+          fail("List objects failed, status:" + xhr.status +
+          ", error:" + xhr.responseText);
+        }
+      }
+    });
+  },
+
+  putObject: function (bucketName, objectName, content, metadata,
+                       progressListener, success, fail) {
     var baseUri = this.config.getUploadBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName);
     var self = this;
@@ -239,7 +243,7 @@ GalaxyFDSClient.prototype = {
     return this.jquery.ajax({
       url: uri,
       type: "PUT",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr, metadata);
       },
       dataType: "json",
@@ -247,9 +251,9 @@ GalaxyFDSClient.prototype = {
       cache: false,
       processData: false,
       contentType: false,
-      xhr: function() {
+      xhr: function () {
         var xhr = $.ajaxSettings.xhr();
-        xhr.upload.onprogress = function(event) {
+        xhr.upload.onprogress = function (event) {
           var progress = Math.floor(event.loaded / event.total * 100);
           if (progressListener !== undefined && progressListener !== null) {
             progressListener(progress);
@@ -257,18 +261,18 @@ GalaxyFDSClient.prototype = {
         };
         return xhr;
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success(xhr.responseJSON);
         } else {
           fail("Put object failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  postObject: function(bucketName, content, metadata, success, fail) {
+  postObject: function (bucketName, content, metadata, success, fail) {
     var baseUri = this.config.getUploadBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/");
     var self = this;
@@ -281,102 +285,102 @@ GalaxyFDSClient.prototype = {
     return this.jquery.ajax({
       url: uri,
       type: "POST",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
       dataType: "json",
       data: content,
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success(xhr.responseJSON);
         } else {
           fail("Put object failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  getObject: function(bucketName, objectName, success, fail) {
+  getObject: function (bucketName, objectName, success, fail) {
     var baseUri = this.config.getDownloadBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName);
     return this.jquery.fileDownload(uri + "&Authentication=SSO").
-      done(function() {
-        success();
-      }).
-      fail(function() {
-        fail("Get object failed");
-      });
+        done(function () {
+          success();
+        }).
+        fail(function () {
+          fail("Get object failed");
+        });
   },
 
-  getObjectMetadata: function(bucketName, objectName, success, fail) {
+  getObjectMetadata: function (bucketName, objectName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName, "metadata");
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "GET",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           var metadata = self.parseMetadataFromHeaders(xhr.getAllResponseHeaders());
           success(metadata);
         } else {
           fail("Get object metadata failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  getObjectAcl: function(bucketName, objectName, success, fail) {
+  getObjectAcl: function (bucketName, objectName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName, "acl");
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "GET",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
       dataType: "json",
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success(xhr.responseJSON);
         } else {
           fail("Get object acl failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  setObjectAcl: function(bucketName, objectName, acl, success, fail) {
+  setObjectAcl: function (bucketName, objectName, acl, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName, "acl");
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "PUT",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
       data: JSON.stringify(acl),
       contentType: "application/json",
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
         } else {
           fail("Set object acl failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  deleteObjectAcl: function(bucketName, objectName, acl, success, fail) {
+  deleteObjectAcl: function (bucketName, objectName, acl, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName, "acl",
         "action=delete");
@@ -384,68 +388,89 @@ GalaxyFDSClient.prototype = {
     return this.jquery.ajax({
       url: uri,
       type: "PUT",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
       data: JSON.stringify(acl),
       contentType: "application/json",
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
         } else {
           fail("Delete object acl failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  doesObjectExist: function(bucketName, objectName, success, fail) {
+  doesObjectExist: function (bucketName, objectName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName);
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "HEAD",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200 || xhr.status === 403) {
           success(true);
         } else if (xhr.status === 404) {
           success(false);
         } else {
           fail("Check object existence failed, status:" + xhr.status
-            + ", error:" + xhr.responseText);
+          + ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  deleteObject: function(bucketName, objectName, success, fail) {
+  deleteObject: function (bucketName, objectName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName);
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "DELETE",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
         } else {
           fail("Delete object failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  renameObject: function(bucketName, srcObjectName, destObjectName,
-    success, fail) {
+  restoreObject: function (bucketName, objectName, success, fail) {
+    var baseUri = this.config.getBaseUri();
+    var uri = this.formatUri(baseUri, bucketName + "/" + objectName, "restore")
+    var self = this;
+    return this.jquery.ajax({
+      url: uri,
+      type: "PUT",
+      beforeSend: function (xhr) {
+        self.prepareRequestHeader(xhr);
+      },
+      complete: function (xhr, status) {
+        if (xhr.status === 200) {
+          success();
+        } else {
+          fail("Restore object failed, status:" + xhr.status +
+          ", error:" + xhr.responseText);
+        }
+      }
+    })
+  },
+
+  renameObject: function (bucketName, srcObjectName, destObjectName,
+                          success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + srcObjectName,
         "renameTo=" + destObjectName);
@@ -453,21 +478,21 @@ GalaxyFDSClient.prototype = {
     return this.jquery.ajax({
       url: uri,
       type: "PUT",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
         } else {
           fail("Rename object failed, status:" + xhr.status +
-            ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  prefetchObject: function(bucketName, objectName, success, fail) {
+  prefetchObject: function (bucketName, objectName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName,
         "prefetch");
@@ -475,21 +500,21 @@ GalaxyFDSClient.prototype = {
     return this.jquery.ajax({
       url: uri,
       type: "PUT",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
-      complete: function(xhr, status) {
-        if(xhr.status === 200) {
+      complete: function (xhr, status) {
+        if (xhr.status === 200) {
           success();
         } else {
           fail("Prefetch object failed, status:" + xhr.status + ", error:" +
-            xhr.responseText);
+          xhr.responseText);
         }
       }
     });
   },
 
-  refreshObject: function(bucketName, objectName, success, fail) {
+  refreshObject: function (bucketName, objectName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName,
         "refresh");
@@ -497,84 +522,112 @@ GalaxyFDSClient.prototype = {
     return this.jquery.ajax({
       url: uri,
       type: "PUT",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
         } else {
           fail("Refresh object failed, status:" + xhr.status + ", error:" +
-            xhr.responseText);
+          xhr.responseText);
         }
       }
     });
   },
 
-  addDomainMapping: function(bucketName, domainName, success, fail) {
+  addDomainMapping: function (bucketName, domainName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName, "domain=" + domainName);
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "PUT",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
         } else {
           fail("Add domain mapping failed, status:" + xhr.status + ", error:" +
-              xhr.responseText);
+          xhr.responseText);
         }
       }
     });
   },
 
-  deleteDomainMapping : function(bucketName, domainName, success, fail) {
+  deleteDomainMapping: function (bucketName, domainName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName, "domain=" + domainName);
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "DELETE",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestUri(xhr);
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
         } else {
           fail("Delete domain mapping failed, status:" + xhr.status +
-              ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  listDomainMappings : function(bucketName, success, fail) {
+  listDomainMappings: function (bucketName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName, "domain")
     var self = this;
     return this.jquery.ajax({
       url: uri,
       type: "GET",
-      beforeSend: function(xhr) {
+      beforeSend: function (xhr) {
         self.prepareRequestUri(xhr);
       },
-      complete: function(xhr, status) {
+      complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
         } else {
           fail("List domain mappings failed, status:" + xhr.status +
-              ", error:" + xhr.responseText);
+          ", error:" + xhr.responseText);
         }
       }
     });
   },
 
-  prepareRequestHeader: function(xhr, metadata) {
+  getMetrics: function (bucketName, startTime, endTime, metricName, type,
+      aggregator, downsampleAggregator, downsampleInterval, downsampleTimeUnit,
+      calcRate, success, fail) {
+    var baseUri = this.config.getBaseUri();
+    var uri = this.formatUri(baseUri, bucketName, "startTime=" + startTime,
+        "endTime=" + endTime, "metric=" + metricName, "type=" + type,
+        "aggregator=" + aggregator, "downsampleAggregator=" + downsampleAggregator +
+        "downsampleInterval=" + downsampleInterval, "downsampleTimeUnit=" +
+        downsampleTimeUnit, "calcRate=" + calcRate);
+    var self = this;
+    return this.jquery.ajax({
+      url: uri,
+      type: "GET",
+      beforeSend: function (xhr) {
+        self.prepareRequestHeader(xhr);
+      },
+      dataType: "json",
+      complete: function (xhr, status) {
+        if (xhr.status === 200) {
+          success(xhr.responseJSON);
+        } else {
+          fail("Get metrics failed, status:" + xhr.status +
+          ", error:" + xhr.responseText);
+        }
+      }
+    });
+  },
+
+  prepareRequestHeader: function (xhr, metadata) {
     this.credential.addHeader(xhr);
     if (metadata !== undefined && metadata !== null) {
       for (key in metadata.metadata) {
@@ -583,11 +636,11 @@ GalaxyFDSClient.prototype = {
     }
   },
 
-  prepareRequestUri: function(uri) {
+  prepareRequestUri: function (uri) {
     return this.credential.addParam(uri);
   },
 
-  formatUri: function(baseUri) {
+  formatUri: function (baseUri) {
     if (arguments.length < 1) {
       throw "Invalid parameter for formatUri()";
     }
@@ -609,7 +662,7 @@ GalaxyFDSClient.prototype = {
     return this.prepareRequestUri(uri);
   },
 
-  parseMetadataFromHeaders: function(headers) {
+  parseMetadataFromHeaders: function (headers) {
     var metadata = new FDSObjectMetadata();
     var headersArray = headers.split("\r\n");
     for (index in headersArray) {
