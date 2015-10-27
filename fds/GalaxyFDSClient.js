@@ -77,6 +77,28 @@ GalaxyFDSClient.prototype = {
     });
   },
 
+  getBucket: function (bucketName, success, fail) {
+    var baseUri = this.config.getBaseUri();
+    var uri = this.formatUri(baseUri, bucketName);
+    var self = this;
+    return this.jquery.ajax({
+      url: uri,
+      type: "GET",
+      beforeSend: function (xhr) {
+        self.prepareRequestHeader(xhr);
+      },
+      dataType: "json",
+      complete: function (xhr, status) {
+        if (xhr.status === 200 || xhr.status === 404) {
+          success(xhr.responseJSON);
+        } else {
+          fail("Get bucket failed, status:" + xhr.status
+          + ", error:" + xhr.responseText);
+        }
+      }
+    })
+  },
+
   doesBucketExist: function (bucketName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName);
@@ -603,9 +625,9 @@ GalaxyFDSClient.prototype = {
       aggregator, downsampleAggregator, downsampleInterval, downsampleTimeUnit,
       calcRate, success, fail) {
     var baseUri = this.config.getBaseUri();
-    var uri = this.formatUri(baseUri, bucketName, "startTime=" + startTime,
+    var uri = this.formatUri(baseUri, bucketName, "tsd", "startTime=" + startTime,
         "endTime=" + endTime, "metric=" + metricName, "type=" + type,
-        "aggregator=" + aggregator, "downsampleAggregator=" + downsampleAggregator +
+        "aggregator=" + aggregator, "downsampleAggregator=" + downsampleAggregator,
         "downsampleInterval=" + downsampleInterval, "downsampleTimeUnit=" +
         downsampleTimeUnit, "calcRate=" + calcRate);
     var self = this;
@@ -622,6 +644,66 @@ GalaxyFDSClient.prototype = {
         } else {
           fail("Get metrics failed, status:" + xhr.status +
           ", error:" + xhr.responseText);
+        }
+      }
+    });
+  },
+
+  getPresignedUrl: function(bucketName, objectName, subResources, expiration,
+    httpMethod, enableCdn, enableHttps, signAlgorithm, success, fail) {
+    var subResourcesString = "";
+    if (subResources != null) {
+      var count = 0;
+      for (idx in subResources) {
+        if (count === 0) {
+          subResourcesString += subResources[idx];
+        } else {
+          subResourcesString += ":" + subResources[idx];
+        }
+        count++;
+      }
+    }
+
+    var baseUri = this.config.getBaseUri();
+    var uri = this.formatUri(baseUri, bucketName + "/" + objectName, "presignedUrl",
+        "subResources=" + subResourcesString, "expiration=" + expiration,
+        "httpMethod=" + httpMethod, "enableCdn=" + enableCdn,
+        "enableHttps=" + enableHttps, "signAlgorithm=" + signAlgorithm);
+    var self = this;
+    return this.jquery.ajax({
+      url: uri,
+      type: "GET",
+      beforeSend: function (xhr) {
+        self.prepareRequestHeader(xhr);
+      },
+      complete: function (xhr, status) {
+        if (xhr.status === 200) {
+          success(xhr.responseText)
+        } else {
+          fail("Get presigned url failed, status:" + xhr.status +
+          ", error:" + xhr.responseText);
+        }
+      }
+    });
+  },
+
+  getDeveloperInfo: function (success, fail) {
+    var baseUri = this.config.getBaseUri();
+    var uri = this.formatUri(baseUri, "", "developerInfo")
+    var self = this;
+    return this.jquery.ajax({
+      url: uri,
+      type: "GET",
+      beforeSend: function (xhr) {
+        self.prepareRequestHeader(xhr);
+      },
+      dataType: "json",
+      complete: function (xhr, status) {
+        if (xhr.status === 200) {
+          success(xhr.responseJSON);
+        } else {
+          fail("Get developer info failed, status:" + xhr.status
+          + ", error:" + xhr.responseText);
         }
       }
     });

@@ -27,7 +27,7 @@
       function listAllBuckets() {
         // List buckets
         fdsClient.listBuckets(function (result, xhr) {
-          $("#myObjects").html(JSON.stringify(result));
+          $("#myBuckets").html(JSON.stringify(result));
         });
       }
 
@@ -49,6 +49,31 @@
         }, function(errorMsg) {
           alert(errorMsg);
         });
+      }
+
+      function getBucket() {
+        fdsClient.getBucket(bucketName, function(result) {
+          $("#getBucket").html(JSON.stringify(result));
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function getDeveloperInfo() {
+        fdsClient.getDeveloperInfo(function(result) {
+          $("#getDeveloperInfo").html(JSON.stringify(result));
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function getPresignedUrl() {
+        fdsClient.getPresignedUrl(bucketName, objectName, null, "1464829356000", "GET",
+                false, false, "HmacSHA1", function(result) {
+                  $("#getPresignedUrl").html(result);
+                }, function(errorMsg) {
+                  alert(errorMsg)
+                });
       }
 
       function deleteBucket() {
@@ -237,8 +262,8 @@
         });
       });
     </script>
-    <input type="button" value="List My objects" onclick="listAllBuckets()" />
-    <div id="myObjects"></div>
+    <input type="button" value="List My buckets" onclick="listAllBuckets()" />
+    <div id="myBuckets"></div>
     <br/>
 
     <input type="button" value="Does bucket exist" onclick="doesBucketExist()" />
@@ -247,6 +272,18 @@
 
     <input type="button" value="Create bucket" onclick="createBucket()" />
     <div id="createBucket"></div>
+    <br/>
+
+    <input type="button" value="Get bucket" onclick="getBucket()" />
+    <div id="getBucket"></div>
+    <br/>
+
+    <input type="button" value="Get developer info" onclick="getDeveloperInfo()" />
+    <div id="getDeveloperInfo"></div>
+    <br/>
+
+    <input type="button" value="Get presigned url" onclick="getPresignedUrl()" />
+    <div id="getPresignedUrl"></div>
     <br/>
 
     <input type="button" value="Delete bucket" onclick="deleteBucket()" />
