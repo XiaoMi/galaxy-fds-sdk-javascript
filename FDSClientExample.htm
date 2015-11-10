@@ -126,7 +126,6 @@
 
       function putObject() {
         var metadata = new FDSObjectMetadata();
-        metadata.addUserMetadata("x-xiaomi-meta-test", "value");
         fdsClient.putObject(bucketName, objectName, "Hello world!", metadata,
             null, function(result) {
               $("#putObject").html(JSON.stringify(result));
@@ -240,6 +239,48 @@
         });
       }
 
+      function refreshObject() {
+        fdsClient.refreshObject(bucketName, objectName, "", function(result) {
+          alert("refresh object success");
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function refreshObjectUsingPresignedUrl() {
+        fdsClient.getPresignedUrl(bucketName, objectName, null, "1464829356000", "GET",
+          true, false, "HmacSHA1", function(result) {
+            fdsClient.refreshObject(bucketName, objectName, result, function(result) {
+            alert("refresh object success");
+            }, function(errorMsg) {
+              alert(errorMsg);
+            });
+        }, function(errorMsg) {
+                  alert(errorMsg);
+        });
+      }
+
+      function prefetchObject() {
+        fdsClient.prefetchObject(bucketName, objectName, "", function(result) {
+          alert("prefetch object success");
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
+      function prefetchObjectUsingPresignedUrl() {
+        fdsClient.getPresignedUrl(bucketName, objectName, null, "1464829356000", "GET",
+                false, false, "HmacSHA1", function(result) {
+          fdsClient.prefetchObject(bucketName, objectName, result, function(result) {
+            alert("prefetch object success");
+          }, function(errorMsg) {
+            alert(errorMsg);
+          });
+        }, function(errorMsg) {
+          alert(errorMsg);
+        });
+      }
+
       $(document).ready(function() {
         $("#submitForm").click(function() {
           var file = $("input[type=file]")[0].files[0];
@@ -334,6 +375,22 @@
 
     <input type="button" value="Delete object acl" onclick="deleteObjectAcl()" />
     <div id="deleteObjectAcl"></div>
+    <br/>
+
+    <input type="button" value="Refresh object" onclick="refreshObject()" />
+    <div id="refreshObject"></div>
+    <br/>
+
+    <input type="button" value="Refresh object using presigned url" onclick="refreshObjectUsingPresignedUrl()" />
+    <div id="refreshObjectUsingPresignedUrl"></div>
+    <br/>
+
+    <input type="button" value="prefetch object" onclick="prefetchObject()" />
+    <div id="prefetchObject"></div>
+    <br/>
+
+    <input type="button" value="Prefetch object using presigned url" onclick="prefetchObjectUsingPresignedUrl()" />
+    <div id="prefetchObjectUsingPresignedUrl"></div>
     <br/>
 
     <form action="">

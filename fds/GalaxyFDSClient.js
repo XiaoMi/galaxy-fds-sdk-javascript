@@ -514,7 +514,7 @@ GalaxyFDSClient.prototype = {
     });
   },
 
-  prefetchObject: function (bucketName, objectName, success, fail) {
+  prefetchObject: function (bucketName, objectName, presignedUrl, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName,
         "prefetch");
@@ -525,6 +525,8 @@ GalaxyFDSClient.prototype = {
       beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
+      data: presignedUrl,
+      contentType: "text/plain",
       complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
@@ -536,7 +538,7 @@ GalaxyFDSClient.prototype = {
     });
   },
 
-  refreshObject: function (bucketName, objectName, success, fail) {
+  refreshObject: function (bucketName, objectName, presignedUrl, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName + "/" + objectName,
         "refresh");
@@ -547,6 +549,8 @@ GalaxyFDSClient.prototype = {
       beforeSend: function (xhr) {
         self.prepareRequestHeader(xhr);
       },
+      data: presignedUrl,
+      contentType: "text/plain",
       complete: function (xhr, status) {
         if (xhr.status === 200) {
           success();
@@ -685,6 +689,10 @@ GalaxyFDSClient.prototype = {
         }
       }
     });
+  },
+
+  getDownloadObjectUrl: function (bucketName, objectName, success, fail) {
+    return this.config.getBaseUri() + bucketName + "/" + objectName;
   },
 
   getDeveloperInfo: function (success, fail) {
