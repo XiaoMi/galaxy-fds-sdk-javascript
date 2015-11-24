@@ -691,8 +691,11 @@ GalaxyFDSClient.prototype = {
     });
   },
 
-  getDownloadObjectUrl: function (bucketName, objectName, success, fail) {
-    return this.config.getBaseUri() + bucketName + "/" + objectName;
+  getDownloadObjectUrl: function (bucketName, objectName, enableHttps, enableCdn, success, fail) {
+    var configTmp = new ClientConfiguration();
+    configTmp.enableHttps = enableHttps;
+    configTmp.enableCdnForDownload = enableCdn;
+    return configTmp.getDownloadBaseUri() + bucketName + "/" + objectName;
   },
 
   getDeveloperInfo: function (success, fail) {
