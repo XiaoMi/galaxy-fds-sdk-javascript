@@ -11,7 +11,8 @@ FDSObjectMetadata.prototype = {
     Common.get("CONTENT_ENCODING"),
     Common.get("CONTENT_LENGTH"),
     Common.get("CONTENT_MD5"),
-    Common.get("CONTENT_TYPE")
+    Common.get("CONTENT_TYPE"),
+    Common.get("UPLOAD_TIME")
   ],
 
   USER_DEFINED_METADATA_PREFIX: Common.get("XIAOMI_HEADER_PREFIX") + "meta-",
