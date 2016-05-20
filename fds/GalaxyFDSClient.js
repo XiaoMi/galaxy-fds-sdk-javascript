@@ -35,6 +35,28 @@ GalaxyFDSClient.prototype = {
     });
   },
 
+  listAuthorizedBuckets: function (success, fail) {
+    var baseUri = this.config.getBaseUri();
+    var uri = this.formatUri(baseUri, "", "authorizedBuckets");
+    var self = this;
+    return this.jquery.ajax({
+      url: uri,
+      type: "GET",
+      beforeSend: function (xhr) {
+        self.prepareRequestHeader(xhr);
+      },
+      dataType: "json",
+      complete: function (xhr, status) {
+        if (xhr.status === 200) {
+          success(xhr.responseJSON);
+        } else {
+          fail("List authorized buckets failed, status:" + xhr.status +
+          ", error:" + xhr.responseText);
+        }
+      }
+    });
+  },
+
   createBucket: function (bucketName, success, fail) {
     var baseUri = this.config.getBaseUri();
     var uri = this.formatUri(baseUri, bucketName);

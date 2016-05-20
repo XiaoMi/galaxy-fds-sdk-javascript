@@ -31,6 +31,13 @@
         });
       }
 
+      function listAuthorizedBuckets() {
+        // List authorized buckets
+        fdsClient.listAuthorizedBuckets(function (result, xhr) {
+          $("#authorizedBuckets").html(JSON.stringify(result));
+        });
+      }
+
       function doesBucketExist() {
         fdsClient.doesBucketExist(bucketName, function(result) {
           if (result) {
@@ -305,6 +312,10 @@
     </script>
     <input type="button" value="List My buckets" onclick="listAllBuckets()" />
     <div id="myBuckets"></div>
+    <br/>
+
+    <input type="button" value="List Authorized buckets" onclick="listAuthorizedBuckets()" />
+    <div id="authorizedBuckets"></div>
     <br/>
 
     <input type="button" value="Does bucket exist" onclick="doesBucketExist()" />
