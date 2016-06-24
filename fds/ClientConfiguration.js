@@ -8,15 +8,13 @@ ClientConfiguration.prototype = {
 
   HTTPS: "https://",
 
-  baseHttpHost: "files.fds.api.xiaomi.com",
+  URI_CDN : "cdn",
 
-  baseCdnHttpHost: "cdn.fds.api.xiaomi.com",
+  URI_SUFFIX : "fds.api.xiaomi.com",
 
-  baseHttpsHost: "files.fds.api.xiaomi.com",
+  URI_CDN_SUFFIX : "fds.api.mi-img.com",
 
-  baseCdnHttpsHost: "cdn.fds-ssl.api.xiaomi.com",
-
-  regionName: "",
+  regionName: "cnbj0",
 
   enableCdnForDownload: true,
 
@@ -54,22 +52,10 @@ ClientConfiguration.prototype = {
       baseUri += this.HTTP;
     }
 
-    if (this.regionName.length > 0) {
-      baseUri += this.regionName + "-";
-    }
-
     if (enableCdn) {
-      if (this.enableHttps) {
-        baseUri += this.baseCdnHttpsHost;
-      } else {
-        baseUri += this.baseCdnHttpHost;
-      }
+      baseUri += URI_CDN + "." + this.regionName + "." + this.URI_CDN_SUFFIX;
     } else {
-      if (this.enableHttps) {
-        baseUri += this.baseHttpsHost;
-      } else {
-        baseUri += this.baseHttpsHost;
-      }
+      baseUri += this.regionName + "." + this.URI_SUFFIX;
     }
     baseUri += "/";
     return baseUri;
